@@ -1,0 +1,5 @@
+{
+  "name": "Trade Simulator",
+  "description": "A cryptocurrency leverage trading simulator. Features real-time market data, simulated wallet management, detailed P&L analytics, and market insights.",
+  "requestFramePermissions": []
+}
