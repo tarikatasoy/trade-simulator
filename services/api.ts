@@ -1,7 +1,7 @@
 
 import { Order, OrderType, Position, PositionSide, Wallet } from "../types";
 
-const API_BASE_URL = 'https://tarikatasoy.com/api';
+const API_BASE_URL = 'https://trade.tarikatasoy.com/api';
 
 class ApiService {
   private token: string | null = null;
