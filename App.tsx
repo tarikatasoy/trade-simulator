@@ -243,7 +243,7 @@ const App: React.FC = () => {
       const currentPrice = marketPrices.get(selectedSymbol) || 0;
 
       if (currentPrice === 0 && type === OrderType.MARKET) {
-        alert("Waiting for market price...");
+        alert("Piyasa fiyatı bekleniyor...");
         return;
       }
       

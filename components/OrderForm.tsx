@@ -127,6 +127,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ symbol, currentPrice, balance, on
                  value={limitPrice}
                  onChange={(e) => setLimitPrice(e.target.value)}
                  className="w-full bg-bg-card border border-border rounded-lg py-2 pl-9 pr-3 text-text font-mono focus:border-cyber-primary outline-none transition-all"
+                 placeholder="Enter price"
                />
              </div>
            </div>
@@ -214,11 +215,11 @@ const OrderForm: React.FC<OrderFormProps> = ({ symbol, currentPrice, balance, on
         {/* Info Box */}
         <div className="bg-bg-hover rounded-lg border border-border p-3 space-y-1">
           <div className="flex justify-between text-xs">
-            <span className="text-text-muted">Size</span>
+            <span className="text-text-muted">Position Size</span>
             <span className="font-mono text-text">{positionSize.toLocaleString()} USDT</span>
           </div>
           <div className="flex justify-between text-xs">
-            <span className="text-text-muted">Est. Liquidation</span>
+            <span className="text-text-muted">Est. Liq. Price</span>
             <span className="font-mono text-orange-500 font-bold">{liqPrice > 0 ? liqPrice.toFixed(8).replace(/\.?0+$/, "") : '-'}</span>
           </div>
         </div>
@@ -234,7 +235,9 @@ const OrderForm: React.FC<OrderFormProps> = ({ symbol, currentPrice, balance, on
             } ${isSubmitting ? 'opacity-70 cursor-wait' : ''}`}
         >
           {isSubmitting ? <Loader2 className="animate-spin" /> : <Zap className={activeTab === 'long' ? 'text-green-100' : 'text-red-100'} size={20} fill="currentColor" />}
-          {orderType === OrderType.LIMIT ? 'PLACE LIMIT' : (activeTab === 'long' ? 'BUY / LONG' : 'SELL / SHORT')}
+          {orderType === OrderType.LIMIT 
+            ? (activeTab === 'long' ? 'LIMIT LONG' : 'LIMIT SHORT')
+            : (activeTab === 'long' ? 'LONG' : 'SHORT')}
         </button>
 
       </div>
