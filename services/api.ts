@@ -1,5 +1,5 @@
 
-import { Order, OrderType, Position, PositionSide, Wallet } from "../types";
+import { Order, OrderType, Position, PositionSide, Wallet, PositionHistory } from "../types";
 
 const API_BASE_URL = 'https://trade.tarikatasoy.com/api';
 
@@ -116,6 +116,50 @@ class ApiService {
       initialMargin: Number(p.margin),
       status: p.status
     }));
+  }
+    async getHistory(): Promise<PositionHistory[]> {
+    try {
+      const res = await this.request('/positions/history');
+      // Backend returns { positions: [...] } based on your code
+      const list = Array.isArray(res) ? res : (res.positions || res.history || []);
+      
+      return list
+        .filter((p: any) => p.status === 'CLOSED') // Client-side filtering
+        .map((p: any) => {
+          const entryPrice = Number(p.entry_price);
+          const size = Number(p.size);
+          const pnl = Number(p.pnl || 0);
+          const side = p.side;
+
+          // Calculate Close Price since DB doesn't have it
+          // Formula: PnL = (Exit - Entry) * (Size/Entry) for Long
+          // Reversing: Exit = Entry + (PnL * Entry / Size)
+          let closePrice = 0;
+          if (size > 0 && entryPrice > 0) {
+              const priceDiff = (pnl * entryPrice) / size;
+              if (side === 'LONG') {
+                  closePrice = entryPrice + priceDiff;
+              } else {
+                  closePrice = entryPrice - priceDiff;
+              }
+          }
+
+          return {
+            id: p.id,
+            symbol: p.symbol,
+            side: p.side,
+            entryPrice: entryPrice,
+            closePrice: closePrice,
+            amount: size,
+            leverage: Number(p.leverage),
+            realizedPnl: pnl,
+            closedAt: new Date(p.closed_at || p.updated_at || Date.now()).getTime()
+          };
+        });
+    } catch (e) {
+      console.warn("History fetch error", e);
+      return [];
+    }
   }
 
   async closePosition(id: string, currentPrice: number): Promise<void> {

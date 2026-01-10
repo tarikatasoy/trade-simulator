@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { marketService } from './services/marketService';
 import { api } from './services/api';
-import { Position, PositionSide, PAIRS, Wallet, TickerData, Order, OrderType } from './types';
+import { Position, PositionSide, PAIRS, Wallet, TickerData, Order, OrderType, PositionHistory } from './types';
 import TradingChart from './components/TradingChart';
 import OrderForm from './components/OrderForm';
 import PositionsTable from './components/PositionsTable';
@@ -28,6 +28,7 @@ const AppMobile: React.FC = () => {
   const [wallet, setWallet] = useState<Wallet>({ balance: 0, equity: 0, usedMargin: 0, availableBalance: 0 });
   const [positions, setPositions] = useState<Position[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
+  const [history, setHistory] = useState<PositionHistory[]>([]);
   
   const [searchTerm, setSearchTerm] = useState('');
   const [isDarkMode, setIsDarkMode] = useState(true);
@@ -61,10 +62,11 @@ const AppMobile: React.FC = () => {
   const syncData = useCallback(async () => {
     if (!isAuthenticated) return;
     try {
-      const [walletData, positionsData, ordersData] = await Promise.all([
+      const [walletData, positionsData, ordersData, historyData] = await Promise.all([
         api.getWallet(),
         api.getPositions(),
-        api.getOrders()
+        api.getOrders(),
+        api.getHistory()
       ]);
 
       const currentPrices = marketService.getPrices(); 
@@ -90,6 +92,7 @@ const AppMobile: React.FC = () => {
 
       setPositions(positionsData);
       setOrders(ordersData);
+      setHistory(historyData);
     } catch (error) {
       console.error("Sync error:", error);
     }
@@ -334,6 +337,7 @@ const AppMobile: React.FC = () => {
                         <PositionsTable 
                             positions={positions} 
                             orders={orders} 
+                            history={history}
                             marketPrices={marketPrices}
                             onClosePosition={(id, symbol) => {
                                 const price = marketPrices.get(symbol);

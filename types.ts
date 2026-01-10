@@ -45,6 +45,18 @@ export interface Position {
   pnl?: number; // Backend might calculate this, but frontend can too
 }
 
+export interface PositionHistory {
+  id: string;
+  symbol: string;
+  side: PositionSide;
+  entryPrice: number;
+  closePrice: number;
+  amount: number;
+  leverage: number;
+  realizedPnl: number;
+  closedAt: number;
+}
+
 export interface TickerData {
   symbol: string;
   price: number;
